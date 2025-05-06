@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const socket = io();
+            const sendBtn = document.getElementById('sendBtn');
+            const input = document.getElementById('message');
+            const chatBox = document.getElementById('chatBox');
+
+            sendBtn.onclick = () => {
+                const msg = input.value;
+                if (msg.trim() === "") return;
+                addMessage("You", msg);
+                socket.emit('user_message', msg);
+                input.value = '';
+            };
+
+            socket.on('bot_response', function (msg) {
+                addMessage("Bot", msg);
+            });
+
+            function addMessage(sender, message) {
+                const p = document.createElement("p");
+                p.innerHTML = `<strong>${sender}:</strong> ${message}`;
+                chatBox.appendChild(p);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+    </script>
+</head>
+<body>
+    <h2>Chatbot</h2>
+    <div id="chatBox" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:auto;"></div>
+    <input id="message" type="text" placeholder="Type your message...">
+    <button id="sendBtn">Send</button>
+</body>
+</html>
